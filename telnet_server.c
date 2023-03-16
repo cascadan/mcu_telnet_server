@@ -157,7 +157,7 @@ void netconn_cb (struct netconn *conn, enum netconn_evt evt, u16_t len)
 static void wrt_task (void *arg)
 {
 
-  err_t accept_err;
+  err_t err;
 
   // create the buffer to accumulate bytes to be sent
   instance->buff       = ( uint8_t*) pvPortMalloc( sizeof(uint8_t)*TELNET_BUFF_SIZE );
@@ -171,8 +171,8 @@ static void wrt_task (void *arg)
   for(;;)
   {
 	  instance->status = TELNET_CONN_STATUS_ACCEPTING;
-	  accept_err = netconn_accept(instance->conn, &instance->newconn);
-	  if( accept_err == ERR_OK )
+	  err = netconn_accept(instance->conn, &instance->newconn);
+	  if( err == ERR_OK )
 	  {
 		  // Transfer loop
 		  for(;;)
