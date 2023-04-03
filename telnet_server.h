@@ -34,6 +34,7 @@
 
 #include "FreeRTOS.h"
 #include "stream_buffer.h"
+#include "semphr.h"
 
 // LwIP includes
 #include "lwip/api.h"
