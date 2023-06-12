@@ -159,6 +159,7 @@ static void wrt_task (void *arg)
 
   err_t err;
 
+
   // create the buffer to accumulate bytes to be sent
   instance->buff       = ( uint8_t*) pvPortMalloc( sizeof(uint8_t)*TELNET_BUFF_SIZE );
   instance->buff_mutex = xSemaphoreCreateMutex();
@@ -201,20 +202,26 @@ static void wrt_task (void *arg)
 		  netconn_delete(instance->newconn);
 
 		  // Start listening again
-		  netconn_delete(instance->conn);
+		  err = 1;
 
-		  instance->conn = netconn_new_with_callback(NETCONN_TCP, netconn_cb);
-		  if( instance->conn == NULL )
-		  		return;
+		  while(err)
+		  {
 
-		  	err = netconn_bind(instance->conn, NULL, instance->tcp_port);
-		  	if ( err != ERR_OK )
-		  		return;
+		    netconn_delete(instance->conn);
 
-		  	netconn_listen(instance->conn);
+		    instance->conn = netconn_new_with_callback(NETCONN_TCP, netconn_cb);
+		    if( instance->conn == NULL )
+		      err = 1;
 
-		  	// No connection still established
-		  	instance->status = TELNET_CONN_STATUS_NONE;
+		    else
+		      err = netconn_bind(instance->conn, NULL, instance->tcp_port);
+
+		  }
+
+		  netconn_listen(instance->conn);
+
+		  // No connection still established
+		  instance->status = TELNET_CONN_STATUS_NONE;
 	  }
   }
 }
